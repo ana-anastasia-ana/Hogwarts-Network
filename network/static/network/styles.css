@@ -1,0 +1,24 @@
+body {
+    position: relative;
+    background: url("{% static 'img/hogwarts_Hall_background.png' %}") fixed center;
+    background-size: cover;
+    color: #d3a625;
+    font-family: 'Harry Potter', cursive;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1; /* Place it behind the content */
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.75);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);

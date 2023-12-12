@@ -1,0 +1,57 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+
+      <h2><strong>@{{ profile_user.username }}</strong>'s Profile</h2>
+  
+      <p>Followers: {{ follower_count }} | Following: {{ following_count }}</p>
+
+      {% if not is_own_profile %}
+        <div class="mb-3">
+          {% if is_following %}
+            <form method="post" action="{% url 'unfollow_user' profile_user.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Unfollow</button>
+            </form>
+          {% else %}
+            <form method="post" action="{% url 'follow_user' profile_user.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Follow</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <!-- Display user's posts -->
+      {% if posts %}
+        {% for post in posts %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <p class="card-text">{{ post.timestamp }}</p>
+              <p class="card-text">{{ post.content }}</p>
+              <button class="btn btn-outline-secondary like-btn" data-post-id="{{ post.id }}">
+                {% if post.is_liked_by_user %}
+                    <i class="fa fa-heart"></i> Liked
+                {% else %}
+                    <i class="fa fa-heart"></i> Like
+                {% endif %}
+                <span class="badge badge-light" id="like-count-{{ post.id }}">{{ post.likes.count }}</span>
+            </button>
+            {% if post.user == user %}
+              <a href="{% url 'edit_post' post.id %}" class="btn btn-primary ml-2">Edit</a>
+            {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No posts available.</p>
+      {% endif %}
+
+</div>
+<script src="{% static 'network/scripts.js' %}"></script>
+
+{% endblock %}

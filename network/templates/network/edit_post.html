@@ -1,0 +1,62 @@
+{% extends "network/layout.html" %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Edit Post</h2>
+    <form id="editPostForm" data-post-id="{{ post.id }}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="postContent">Edit your post:</label>
+            <textarea class="form-control" id="postContent" rows="4" cols="50">{{ post.content }}</textarea>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="saveEditedPost()">Save</button>
+
+        <!-- Bootstrap alert message -->
+        <div id="alertMessage" class="alert alert-success mt-3" role="alert" style="display: none;">
+            Post edited successfully!
+        </div>
+    </form>
+</div>
+<script>
+    function saveEditedPost() {
+        const postId = document.getElementById('editPostForm').getAttribute('data-post-id');
+        const newContent = document.getElementById('postContent').value;
+
+        fetch(`/edit_post/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            },
+            body: `content=${newContent}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            const alertMessage = document.getElementById('alertMessage');
+
+            if (data.success) {
+                // Show Bootstrap alert for success
+                alertMessage.classList.remove('alert-danger');
+                alertMessage.classList.add('alert-success');
+                alertMessage.innerText = 'Post edited successfully!';
+            } else {
+                // Show Bootstrap alert for failure
+                alertMessage.classList.remove('alert-success');
+                alertMessage.classList.add('alert-danger');
+                alertMessage.innerText = 'Failed to edit post.';
+            }
+
+            // Display the alert
+            alertMessage.style.display = 'block';
+
+            // Hide the alert after 5 seconds
+            setTimeout(() => {
+                alertMessage.style.display = 'none';
+            }, 4500);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}

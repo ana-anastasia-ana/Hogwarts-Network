@@ -1,0 +1,52 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+
+{% block body %}
+  <h2 class="mb-4">All Posts</h2>
+  {% if posts %}
+    {% for post in posts %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <p class="card-text">
+            <strong><a href="{% url 'user_profile' post.user.id %}">@{{ post.user.username }}</a></strong> -
+            Posted on <strong><i>{{ post.timestamp }}</i></strong>
+          </p>
+          <p class="card-text">{{ post.content }}</p>
+          <button class="btn btn-outline-danger like-btn" data-post-id="{{ post.id }}">
+            {% if post.is_liked_by_user %}
+            <i class="fa fa-heart"></i> Liked
+            {% else %}
+            <i class="fa fa-heart"></i> Like
+            {% endif %}
+            <span class="badge badge-light" id="like-count-{{ post.id }}">{{ post.likes.count }}</span>
+          </button>
+          {% if post.user == user %}
+            <a href="{% url 'edit_post' post.id %}" class="btn btn-primary ml-2">Edit</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No posts available.</p>
+  {% endif %}
+  
+  <div class="pagination mt-4">
+    <span class="step-links">
+      {% if posts.has_previous %}
+        <a href="?page=1" class="btn btn-outline-secondary">&laquo; First</a>
+        <a href="?page={{ posts.previous_page_number }}" class="btn btn-outline-secondary">Previous</a>
+      {% endif %}
+      <span class="current mx-2">
+        Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+      </span>
+      {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}" class="btn btn-outline-warning">Next</a>
+        <a href="?page={{ posts.paginator.num_pages }}" class="btn btn-outline-secondary">Last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+
+  <script src="{% static 'network/scripts.js' %}"></script>
+{% endblock %}
